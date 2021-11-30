@@ -18,6 +18,7 @@ defmodule Advent2021.Day do
 
       def part_one, do: call_if_exists(:part_one)
       def part_two, do: call_if_exists(:part_two)
+      def input, do: @input
 
       defp call_if_exists(func) do
         if Kernel.function_exported?(__MODULE__, func, 1) do
