@@ -8,8 +8,11 @@ defmodule Advent2021.Day do
       @day_module __MODULE__
       @day_no Advent2021.Day.parse_day_from_module_name(@day_module)
       @inputs_dir unquote(__DIR__) |> Path.join("inputs")
-      @input_file @inputs_dir |> Path.join("day_" <> Integer.to_string(@day_no) <> ".txt") |> IO.inspect()
+      @input_file @inputs_dir |> Path.join("day_" <> Integer.to_string(@day_no) <> ".txt")
       @input File.read!(@input_file)
+
+      Module.register_attribute(__MODULE__, :day, persist: true)
+      Module.put_attribute(__MODULE__, :day, @day_no)
 
       def part_one, do: call_if_exists(:part_one)
       def part_two, do: call_if_exists(:part_two)
