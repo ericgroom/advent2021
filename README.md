@@ -1,21 +1,5 @@
 # Advent2021
 
-**TODO: Add description**
+**My Solutions to Advent of Code 2021 in Elixir**
 
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `advent2021` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:advent2021, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/advent2021](https://hexdocs.pm/advent2021).
-
+This is my first year ever repeating a language I've used before. In the past I've used Advent of Code to practice learning a new langauge. But using Elixir last year was such a joy that I want to use it again. You can view my solutions from last year [here](https://github.com/ericgroom/advent2020).
