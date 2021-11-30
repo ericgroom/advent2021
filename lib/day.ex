@@ -14,6 +14,8 @@ defmodule Advent2021.Day do
       Module.register_attribute(__MODULE__, :day, persist: true)
       Module.put_attribute(__MODULE__, :day, @day_no)
 
+      alias Advent2021.Parser
+
       def part_one, do: call_if_exists(:part_one)
       def part_two, do: call_if_exists(:part_two)
 
