@@ -19,11 +19,19 @@ defmodule Advent2021.Days.Day1Test do
     test "example input" do
       assert Day1.part_one(@example) == 7
     end
+
+    test "real input" do
+      assert Day1.part_one() == 1390
+    end
   end
 
   describe "part_two" do
     test "example input" do
       assert Day1.part_two(@example) == 5
+    end
+
+    test "real input" do
+      assert Day1.part_two() == 1457
     end
   end
 end
