@@ -5,9 +5,4 @@ defmodule Advent2021.Parser do
     |> String.split(delimeter)
     |> Enum.map(f)
   end
-
-  def parse_int!(raw) do
-    {n, _} = Integer.parse(raw)
-    n
-  end
 end

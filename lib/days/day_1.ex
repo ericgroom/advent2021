@@ -30,6 +30,6 @@ defmodule Advent2021.Days.Day1 do
 
   def parse(raw) do
     raw
-    |> Parser.parse_list(&Parser.parse_int!/1)
+    |> Parser.parse_list(&String.to_integer/1)
   end
 end
