@@ -31,5 +31,6 @@ defmodule Advent2021.Days.Day1 do
   def parse(raw) do
     raw
     |> Parser.parse_list(&String.to_integer/1)
+    |> Enum.into([])
   end
 end
