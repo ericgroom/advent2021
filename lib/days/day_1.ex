@@ -10,27 +10,20 @@ defmodule Advent2021.Days.Day1 do
     |> count_increases()
   end
 
-  defp count_increases(list, previous \\ nil, count \\ 0)
-  defp count_increases([], _previous, count), do: count
-  defp count_increases([current | rest], nil, 0), do: count_increases(rest, current, 0)
-  defp count_increases([current | rest], previous, count) do
-    next = if current > previous, do: count + 1, else: count
-    count_increases(rest, current, next)
+  defp count_increases(list) do
+    list
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.count(fn [a, b] -> b > a end)
   end
 
-  defp window([]), do: []
-  defp window(input) do
-    [_ | rest] = input
-
-    case input |> Enum.take(3) do
-      [one, two, three] -> [one + two + three | window(rest)]
-      _ -> []
-    end
+  defp window(list) do
+    list
+    |> Enum.chunk_every(3, 1, :discard)
+    |> Enum.map(&Enum.sum/1)
   end
 
   def parse(raw) do
     raw
     |> Parser.parse_list(&String.to_integer/1)
-    |> Enum.into([])
   end
 end
