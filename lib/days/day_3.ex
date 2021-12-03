@@ -16,30 +16,21 @@ defmodule Advent2021.Days.Day3 do
       |> Enum.map(&String.graphemes/1)
 
     oxygen_generator = filter_grid(digits, &most_common(&1, "1"))
-      |> to_binary()
+    cO2_scrubber = filter_grid(digits, &least_common(&1, "0"))
 
-    cO2_scrubber = filter_grid(digits, fn column -> least_common(column, "0") end)
-      |> to_binary()
-
-    {oxygen_generator, cO2_scrubber}
+    {oxygen_generator |> to_binary() , cO2_scrubber |> to_binary()}
   end
 
-  defp filter_grid(grid, keep_predicate, search_column \\ 0) do
-    remaining_nums = Enum.count(grid)
-    cond do
-      remaining_nums <= 0 ->
-        raise "invalid state"
-      remaining_nums == 1 ->
-        List.first(grid)
-      true ->
-        column = column(grid, search_column)
-        keep_digit = keep_predicate.(column)
-        new_grid = Enum.filter(grid, fn list ->
-          Enum.at(list, search_column) == keep_digit
-        end)
-        filter_grid(new_grid, keep_predicate, search_column + 1)
-    end
-
+  defp filter_grid(grid, keep_predicate, search_column \\ 0)
+  defp filter_grid([], _predicate, _column), do: raise "invalid state"
+  defp filter_grid([num], _predicate, _column), do: num
+  defp filter_grid(grid, keep_predicate, search_column) do
+    column = column(grid, search_column)
+    keep_digit = keep_predicate.(column)
+    new_grid = Enum.filter(grid, fn list ->
+      Enum.at(list, search_column) == keep_digit
+    end)
+    filter_grid(new_grid, keep_predicate, search_column + 1)
   end
 
   def gamma_epsilon_rates(diagnostic_report) do
@@ -71,22 +62,18 @@ defmodule Advent2021.Days.Day3 do
   end
 
   defp most_common(list, winner \\ "1") do
-    Enum.frequencies(list)
-      |> then(fn %{"1" => ones, "0" => zeros} ->
-        if ones == zeros, do: winner, else:
-          if ones > zeros, do: "1", else: "0"
-      end)
+    %{"1" => ones, "0" => zeros} = Enum.frequencies(list)
+    if ones == zeros, do: winner, else:
+      if ones > zeros, do: "1", else: "0"
   end
   defp least_common(list, winner) do
-    Enum.frequencies(list)
-      |> then(fn %{"1" => ones, "0" => zeros} ->
-        if ones == zeros, do: winner, else:
-          if ones < zeros, do: "1", else: "0"
-      end)
+    %{"1" => ones, "0" => zeros} = Enum.frequencies(list)
+    if ones == zeros, do: winner, else:
+      if ones < zeros, do: "1", else: "0"
   end
 
   def parse(raw) do
     raw
-      |> Parser.parse_list(& &1)
+      |> Parser.parse_list()
   end
 end
