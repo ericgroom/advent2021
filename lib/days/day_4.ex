@@ -3,54 +3,39 @@ defmodule Advent2021.Days.Day4 do
   alias __MODULE__.BingoBoard
 
   def part_one({numbers, boards}) do
-    find_first_winner_score(numbers, boards)
+    [winner] =
+      score_stream(numbers, boards)
+      |> Enum.find(&single_score?/1)
+
+    winner
   end
 
   def part_two({numbers, boards}) do
-    find_last_winner_score(numbers, boards)
+    [loser] =
+      score_stream(numbers, boards)
+      |> Enum.into([])
+      |> Enum.reverse()
+      |> Enum.find(&single_score?/1)
+
+    loser
   end
 
-  def find_first_winner_score(numbers, boards) do
-    {[winner], _to_call, called, last} = find_next_winners(numbers, MapSet.new(), boards)
-    BingoBoard.score(winner, called, last)
+  defp score_stream(numbers, boards) do
+    Stream.unfold({numbers, MapSet.new(), boards}, fn
+      {[], _, _} ->
+        nil
+
+      {[n | to_call], called, boards} ->
+        called = MapSet.put(called, n)
+        winners = Enum.filter(boards, &BingoBoard.winner?(&1, called))
+        scores = winners |> Enum.map(&BingoBoard.score(&1, called, n))
+        {scores, {to_call, called, boards |> Enum.reject(&Enum.member?(winners, &1))}}
+    end)
   end
 
-  defp find_next_winners([], _, _), do: :exhausted
-
-  defp find_next_winners([n | to_call], called, boards) do
-    called = MapSet.put(called, n)
-    winners = Enum.filter(boards, &BingoBoard.winner?(&1, called))
-
-    case winners do
-      [] ->
-        find_next_winners(to_call, called, boards)
-
-      winners ->
-        {winners, to_call, called, n}
-    end
-  end
-
-  def find_last_winner_score(numbers, boards, called \\ MapSet.new(), last_solo_score \\ nil)
-  def find_last_winner_score([], _boards, _called, last_solo_score), do: last_solo_score
-
-  def find_last_winner_score(numbers, boards, called, last_solo_score) do
-    case find_next_winners(numbers, called, boards) do
-      :exhausted ->
-        last_solo_score
-
-      {[winner], to_call, called, last} ->
-        score = BingoBoard.score(winner, called, last)
-        find_last_winner_score(to_call, boards |> List.delete(winner), called, score)
-
-      {winners, to_call, called, _last} ->
-        find_last_winner_score(
-          to_call,
-          boards |> Enum.reject(fn board -> Enum.member?(winners, board) end),
-          called,
-          nil
-        )
-    end
-  end
+  defp single_score?([]), do: false
+  defp single_score?([_single]), do: true
+  defp single_score?([_multiple | _scores]), do: false
 
   def parse(raw) do
     [numbers | boards] =
