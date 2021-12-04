@@ -3,42 +3,41 @@ defmodule Advent2021.Days.Day4 do
   alias __MODULE__.BingoBoard
 
   def part_one({numbers, boards}) do
-    {winner, called_numbers, last_number} = find_winner(numbers, boards)
-    BingoBoard.score(winner, called_numbers, last_number)
+    find_first_winner_score(numbers, boards)
   end
 
   def part_two({numbers, boards}) do
     find_last_winner_score(numbers, boards)
   end
 
-  def find_winner(numbers, boards) do
-    Enum.reduce_while(numbers, [], fn n, acc ->
-      called_numbers = MapSet.new([n | acc])
-      case Enum.find(boards, &BingoBoard.winner?(&1, called_numbers)) do
-        nil ->
-          {:cont, [n | acc]}
-        winner ->
-          {:halt, {winner, called_numbers, n}}
-      end
-    end)
+  def find_first_winner_score(numbers, boards) do
+    {[winner], _to_call, called, last} = find_next_winners(numbers, MapSet.new(), boards)
+    BingoBoard.score(winner, called, last)
   end
 
-  def find_last_winner_score(numbers, boards) do
-    {_called, last_winner, _} = Enum.reduce(numbers, {[], [], boards}, fn n, {called, last_winner, boards} ->
-      called_numbers = MapSet.new([n | called])
-      case Enum.filter(boards, &BingoBoard.winner?(&1, called_numbers)) do
-        [] ->
-          {[n | called], last_winner, boards}
-        [winner] ->
-          score = BingoBoard.score(winner, called_numbers, n)
-          {[n | called], score, boards |> List.delete(winner)}
-        winners ->
-          #score = BingoBoard.score(winner, called_numbers, n)
-          {[n | called], :multiple, Enum.reject(boards, fn board -> Enum.member?(winners, board) end)}
-      end
-    end)
-
-    last_winner
+  defp find_next_winners([], _, _), do: :exhausted
+  defp find_next_winners([n | to_call], called, boards) do
+    called = MapSet.put(called, n)
+    winners = Enum.filter(boards, &BingoBoard.winner?(&1, called))
+    case winners do
+      [] ->
+        find_next_winners(to_call, called, boards)
+      winners ->
+        {winners, to_call, called, n}
+    end
+  end
+  def find_last_winner_score(numbers, boards, called \\ MapSet.new(), last_solo_score \\ nil)
+  def find_last_winner_score([], _boards, _called, last_solo_score), do: last_solo_score
+  def find_last_winner_score(numbers, boards, called, last_solo_score) do
+    case find_next_winners(numbers, called, boards) do
+      :exhausted ->
+        last_solo_score
+      {[winner], to_call, called, last} ->
+        score = BingoBoard.score(winner, called, last)
+        find_last_winner_score(to_call, boards |> List.delete(winner), called, score)
+      {winners, to_call, called, _last} ->
+        find_last_winner_score(to_call, boards |> Enum.reject(fn board -> Enum.member?(winners, board) end), called, nil)
+    end
   end
   def parse(raw) do
     [numbers | boards] = raw
