@@ -21,7 +21,7 @@ defmodule Advent2021.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:clipboard, "~> 0.2", only: [:dev]}
+      {:clipboard, "~> 0.2", only: [:dev, :test]}
     ]
   end
 end
