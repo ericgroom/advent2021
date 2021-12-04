@@ -16,8 +16,17 @@ defmodule Advent2021.Days.Day3 do
       diagnostic_report
       |> Enum.map(&String.graphemes/1)
 
-    oxygen_generator = filter_grid(digits, &most_common(&1, "1"))
-    cO2_scrubber = filter_grid(digits, &least_common(&1, "0"))
+    oxygen_generator =
+      filter_grid(digits, fn column ->
+        %{"1" => ones, "0" => zeros} = Enum.frequencies(column)
+        if ones >= zeros, do: "1", else: "0"
+      end)
+
+    cO2_scrubber =
+      filter_grid(digits, fn column ->
+        %{"1" => ones, "0" => zeros} = Enum.frequencies(column)
+        if zeros <= ones, do: "0", else: "1"
+      end)
 
     {oxygen_generator |> to_binary(), cO2_scrubber |> to_binary()}
   end
@@ -71,14 +80,9 @@ defmodule Advent2021.Days.Day3 do
     |> Enum.reject(&is_nil/1)
   end
 
-  defp most_common(list, winner \\ "1") do
+  defp most_common(list) do
     %{"1" => ones, "0" => zeros} = Enum.frequencies(list)
-    if ones == zeros, do: winner, else: if(ones > zeros, do: "1", else: "0")
-  end
-
-  defp least_common(list, winner) do
-    %{"1" => ones, "0" => zeros} = Enum.frequencies(list)
-    if ones == zeros, do: winner, else: if(ones < zeros, do: "1", else: "0")
+    if ones > zeros, do: "1", else: "0"
   end
 
   def parse(raw) do
