@@ -3,9 +3,11 @@ defmodule Mix.Tasks.Reddit do
     day_no = String.to_integer(day_no)
     root = File.cwd!()
     day_source_path = Path.join([root, "lib", "days", "day_#{day_no}.ex"])
-    day_source = day_source_path
+
+    day_source =
+      day_source_path
       |> File.stream!()
-      |> Stream.map(& "    " <> &1)
+      |> Stream.map(&("    " <> &1))
       |> Enum.join()
 
     prefix = """

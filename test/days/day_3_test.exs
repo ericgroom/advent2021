@@ -23,7 +23,7 @@ defmodule Advent2021.Days.Day3Test do
     end
 
     test "real input" do
-      assert Day3.part_one() == 2498354
+      assert Day3.part_one() == 2_498_354
     end
   end
 
@@ -33,7 +33,7 @@ defmodule Advent2021.Days.Day3Test do
     end
 
     test "real input" do
-      assert Day3.part_two() == 3277956
+      assert Day3.part_two() == 3_277_956
     end
   end
 end

@@ -12,7 +12,7 @@ defmodule Advent2021.Days.Day1Test do
     240,
     269,
     260,
-    263,
+    263
   ]
 
   describe "part_one" do

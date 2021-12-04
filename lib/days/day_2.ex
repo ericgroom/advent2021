@@ -16,8 +16,10 @@ defmodule Advent2021.Days.Day2 do
       case direction do
         :forward ->
           {depth, position + amount}
+
         :down ->
           {depth + amount, position}
+
         :up ->
           {depth - amount, position}
       end
@@ -29,10 +31,12 @@ defmodule Advent2021.Days.Day2 do
       case direction do
         :down ->
           {depth, position, aim + amount}
+
         :up ->
           {depth, position, aim - amount}
+
         :forward ->
-          {depth + (amount * aim), position + amount, aim}
+          {depth + amount * aim, position + amount, aim}
       end
     end)
   end

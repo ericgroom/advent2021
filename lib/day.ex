@@ -41,7 +41,8 @@ defmodule Advent2021.Day do
   end
 
   def parse_day_from_module_name(module_name) when is_atom(module_name) do
-    day_name = module_name
+    day_name =
+      module_name
       |> Atom.to_string()
       |> String.split(".")
       |> List.last()

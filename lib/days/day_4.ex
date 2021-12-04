@@ -16,44 +16,60 @@ defmodule Advent2021.Days.Day4 do
   end
 
   defp find_next_winners([], _, _), do: :exhausted
+
   defp find_next_winners([n | to_call], called, boards) do
     called = MapSet.put(called, n)
     winners = Enum.filter(boards, &BingoBoard.winner?(&1, called))
+
     case winners do
       [] ->
         find_next_winners(to_call, called, boards)
+
       winners ->
         {winners, to_call, called, n}
     end
   end
+
   def find_last_winner_score(numbers, boards, called \\ MapSet.new(), last_solo_score \\ nil)
   def find_last_winner_score([], _boards, _called, last_solo_score), do: last_solo_score
+
   def find_last_winner_score(numbers, boards, called, last_solo_score) do
     case find_next_winners(numbers, called, boards) do
       :exhausted ->
         last_solo_score
+
       {[winner], to_call, called, last} ->
         score = BingoBoard.score(winner, called, last)
         find_last_winner_score(to_call, boards |> List.delete(winner), called, score)
+
       {winners, to_call, called, _last} ->
-        find_last_winner_score(to_call, boards |> Enum.reject(fn board -> Enum.member?(winners, board) end), called, nil)
+        find_last_winner_score(
+          to_call,
+          boards |> Enum.reject(fn board -> Enum.member?(winners, board) end),
+          called,
+          nil
+        )
     end
   end
+
   def parse(raw) do
-    [numbers | boards] = raw
+    [numbers | boards] =
+      raw
       |> String.split("\n\n", trim: true)
 
-    numbers = numbers
+    numbers =
+      numbers
       |> String.split(",", trim: true)
       |> Enum.map(&String.to_integer/1)
 
-    boards = boards
+    boards =
+      boards
       |> Enum.map(fn board ->
         String.split(board, "\n", trim: true)
         |> Enum.map(fn row ->
           row
-            |> String.split(" ", trim: true)
-            |> Enum.map(&String.to_integer/1)
+          |> String.split(" ", trim: true)
+          |> Enum.map(&String.to_integer/1)
         end)
         |> BingoBoard.new()
       end)
