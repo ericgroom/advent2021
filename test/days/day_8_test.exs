@@ -35,25 +35,4 @@ defmodule Advent2021.Days.Day8Test do
       assert Day8.part_two() == 1_011_785
     end
   end
-
-  describe "decode_unique_signal/1" do
-    test "example" do
-      signal = ~w(acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab)
-
-      expected = %{
-        "acedgfb" => 8,
-        "cdfbe" => 5,
-        "gcdfa" => 2,
-        "fbcad" => 3,
-        "dab" => 7,
-        "cefabd" => 9,
-        "cdfgeb" => 6,
-        "eafb" => 4,
-        "cagedb" => 0,
-        "ab" => 1
-      }
-
-      assert Day8.decode_unique_signal(signal) == expected
-    end
-  end
 end
