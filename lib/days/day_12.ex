@@ -3,59 +3,56 @@ defmodule Advent2021.Days.Day12 do
 
   def part_one(input) do
     input
-    |> find_paths("start", 1)
+    |> find_paths("start", fn neighbors, path_so_far ->
+      cave_visits = Enum.frequencies(path_so_far)
+
+      {lower_caves, upper_caves} = Enum.split_with(neighbors, &lower_case_cave?/1)
+      lower_caves = lower_caves |> Enum.reject(&already_visited?(&1, cave_visits))
+      lower_caves ++ upper_caves
+    end)
   end
 
   def part_two(input) do
     input
-    |> find_paths("start", 2)
+    |> find_paths("start", fn neighbors, path_so_far ->
+      cave_visits = Enum.frequencies(path_so_far)
+      used_double_visit = small_cave_visited_twice(cave_visits)
+
+      {lower_caves, upper_caves} = Enum.split_with(neighbors, &lower_case_cave?/1)
+
+      lower_caves =
+        lower_caves
+        |> Enum.filter(fn cave ->
+          not used_double_visit or not already_visited?(cave, cave_visits)
+        end)
+
+      lower_caves ++ upper_caves
+    end)
   end
 
-  def find_paths(map, from, max_lower_cave_visits, path_so_far \\ [])
+  def find_paths(map, from, allow_visit, path_so_far \\ [])
+  def find_paths(_map, "end", _, _path_so_far), do: 1
 
-  def find_paths(_map, "end", _, path_so_far) do
-    # IO.puts(["end" | path_so_far] |> Enum.reverse() |> Enum.join(","))
-    1
-  end
-
-  def find_paths(map, from, max_lower_cave_visits, path_so_far) do
-    cave_visits = [from | path_so_far] |> Enum.frequencies()
-
-    small_cave_visited_twice =
-      cave_visits
-      |> Enum.any?(fn {cave, visits} -> lower_case_cave?(cave) and visits > 1 end)
-
-    # cave_visits
-    # |> Enum.filter(fn {cave, visits} -> lower_case_cave?(cave) and visits > 1 end)
-    # |> Enum.count()
-    # |> then(fn count ->
-    #   if count > 1 do
-    #     raise "wtf, #{inspect(path_so_far)}"
-    #   end
-    # end)
-
+  def find_paths(map, from, filter_neighbors, path_so_far) do
     able_to_visit =
       map[from]
       |> Enum.reject(&(&1 == "start"))
-      |> Enum.filter(fn cave ->
-        if lower_case_cave?(cave) do
-          visit_count = cave_visits[cave] || 0
-
-          if small_cave_visited_twice or max_lower_cave_visits == 1 do
-            visit_count == 0
-          else
-            visit_count < 2
-          end
-        else
-          true
-        end
-      end)
+      |> filter_neighbors.([from | path_so_far])
 
     for neighbor <- able_to_visit do
-      find_paths(map, neighbor, max_lower_cave_visits, [from | path_so_far])
+      find_paths(map, neighbor, filter_neighbors, [from | path_so_far])
     end
     |> List.flatten()
     |> Enum.sum()
+  end
+
+  defp small_cave_visited_twice(frequencies) do
+    frequencies
+    |> Enum.any?(fn {cave, visits} -> lower_case_cave?(cave) and visits > 1 end)
+  end
+
+  defp already_visited?(cave, frequencies) do
+    Map.has_key?(frequencies, cave)
   end
 
   defp lower_case_cave?(cave) do
