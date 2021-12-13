@@ -9,6 +9,11 @@ defmodule Mix.Tasks.NewDay do
     day_input_path = Path.join([root, "lib", "inputs", "day_#{day_no}.txt"])
     day_test_path = Path.join([root, "test", "days", "day_#{day_no}_test.exs"])
 
+    if File.exists?(day_source_path) or File.exists?(day_input_path) or
+         File.exists?(day_test_path) do
+      raise "One more more files already exist for this day, exiting"
+    end
+
     File.touch!(day_input_path)
 
     File.write!(day_source_path, """
